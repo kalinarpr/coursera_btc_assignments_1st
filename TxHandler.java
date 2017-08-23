@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class TxHandler {
 
-    private UTXOPool ledger;
+    private UTXOPool utxoPool;
 
     /**
      * Creates a public ledger whose current UTXOPool (collection of unspent transaction outputs) is
@@ -11,7 +11,7 @@ public class TxHandler {
      */
     public TxHandler(UTXOPool utxoPool) {
         // IMPLEMENT THIS
-        this.ledger = new UTXOPool(utxoPool);
+        this.utxoPool = new UTXOPool(utxoPool);
 
     }
 
@@ -33,9 +33,9 @@ public class TxHandler {
 
         //Verificando primeira condição (1)
         for (Transaction.Input in: txIn){
-          UTXO nUtxo = new UTXO(in.prevTxHash,in.outputIndex);
+          UTXO utxo = new UTXO(in.prevTxHash,in.outputIndex);
           //Verifico se o input aponta para algum output dentro de UTXOPool.
-          if (!this.ledger.contains(nUtxo)){
+          if (!this.utxoPool.contains(utxo)){
             return(txValid = false);
           }
 
@@ -45,12 +45,6 @@ public class TxHandler {
              return (txValid = false);
           }
         }
-
-        //Verificando segunda condição
-        // for (Transaction.Input in: txIn){
-            UTXO nUtxo = new UTXO(in.prevTxHash,in.outputIndex);
-
-        // }
 
         //Verificando terceira condição
 
