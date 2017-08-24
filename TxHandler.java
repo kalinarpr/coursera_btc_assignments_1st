@@ -27,14 +27,15 @@ public class TxHandler {
     public boolean isValidTx(Transaction tx) {
         // IMPLEMENT THIS
         boolean txValid = true;
+        double inSum = 0.0;
+        double outSum = 0.0;
 
-        //ArrayList<Transaction.Output> txOut = tx.getOutputs();
         ArrayList<Transaction.Input> txIn = tx.getInputs();
-
-        //Verificando primeira condição (1)
         for (Transaction.Input in: txIn){
+          //Verificando primeira condição (1)
+          //Primeiro verifico se todos os inputs desbloqueiam algum output
+          //dentro do UTXOPool.
           UTXO utxo = new UTXO(in.prevTxHash,in.outputIndex);
-          //Verifico se o input aponta para algum output dentro de UTXOPool.
           if (!this.utxoPool.contains(utxo)){
             return(txValid = false);
           }
@@ -44,11 +45,25 @@ public class TxHandler {
           if (!Crypto.verifySignature(out.address,tx.getRawTx(),in.signature)){
              return (txValid = false);
           }
+          //Somando os valores de input para verificar condição 5.
+          inSum += out.value;
         }
 
-        //Verificando terceira condição
+        //Verificando a terceira condição.
+        
+        //Verificando quarta condição (4)
+        ArrayList<Transaction.Output> txOut = tx.getOutputs();
+        for (Transaction.Output out: txOut){
+          if (out.value < 0){
+            return (txValid = false);
+          }
+          outSum += out.value;
+        }
 
-
+        //verificando a quinta condição (5)
+        if (inSum < outSum){
+          return (txValid = false)
+        }
 
         return txValid;
     }
